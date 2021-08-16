@@ -3,13 +3,13 @@ import pandas as pd
 import datetime as dt 
 import pytz
 import alpaca_trade_api as tradeapi
-from secret import Secret
+from credentials import *
 import time
 
 class Bot:
     def __init__(self):
-        api_key = Secret.paper_api_key
-        secret_key = Secret.secret_key
+        api_key = PAPER_API_KEY 
+        secret_key = SECRET_KEY 
         alp_base_url = 'https://paper-api.alpaca.markets'
         api = tradeapi.REST(api_key, secret_key, alp_base_url, api_version='v2')
         self.api = api
@@ -20,9 +20,7 @@ class Bot:
         portfolio = api.list_positions()
 
         for position in portfolio:
-        # if qty of shares is less than 0 we are shorting, 
-        # so we will buy if price rises above 10 percent
-
+        # if qty of shares is less than 0 we are shorting, we buy if price rises above 10 percent
             if int(position.qty) < 0 and float(position.change_today) > .1:
                 percent_change = position.avg_entry_price + (position.avg_entry_price*.1)
                 print('buy stop loss of {} at {} percent loss with price {}'.format(position.symbol, percent_change, position.current_price))
@@ -32,9 +30,7 @@ class Bot:
                                 side='buy',
                                 stop_loss=percent_change)
 
-        # if qty of shares is greater than 1 we are in a long buy position,
-        # so we will sell if price falls below 10 percent
-
+        # if qty of shares is greater than 1 we are in a long buy position, we sell if price falls below 10 percent
             if int(position.qty) > 0 and float(position.change_today) < -.1:
                 percent_change = position.avg_entry_price - (position.avg_entry_price*.1)
                 print('sell stop loss of {} at {} percent loss with price {}'.format(position.symbol, percent_change, position.current_price))
@@ -85,8 +81,6 @@ class Bot:
         # the lower day for the moving average is the faster one 
         # when this crosses over the slower moving average of a larger amount of days
         # this a Golden Cross and it is an indicator for bullish returns
-
-
         close = data[ticker, 'close']
         fast_moving_avg = close.rolling(window=10).mean()
         slow_moving_avg = close.rolling(window=50).mean()
@@ -137,7 +131,6 @@ class Bot:
 
 if __name__ == '__main__':
     b = Bot()
-    # b.check_account()
     tz_pacific = pytz.timezone('US/Pacific')
     datetime_pacific = dt.datetime.now(tz_pacific)
     current_time = datetime_pacific.strftime("%H:%M:%S")
@@ -146,9 +139,7 @@ if __name__ == '__main__':
     # create an infinite loop with a rest period every hour using sleep 
     # build a new image called trading-bot-linux
     # follow the commands to push it to docker hub and deploy to digital ocean
-
     market_open = now.replace(hour=6, minute=30, second=0, microsecond=0, tzinfo=tz_pacific) # 6:30 am 
-
     market_close = now.replace(hour=13, minute=0, second=0, microsecond=0, tzinfo=tz_pacific) # 1:00 pm  
     
     while(True):
