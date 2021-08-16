@@ -6,15 +6,12 @@ import alpaca_trade_api as tradeapi
 from secret import Secret
 import time
 
-
 class Bot:
-
     def __init__(self):
         api_key = Secret.paper_api_key
         secret_key = Secret.secret_key
         alp_base_url = 'https://paper-api.alpaca.markets'
         api = tradeapi.REST(api_key, secret_key, alp_base_url, api_version='v2')
-
         self.api = api
 
     # check our current positions to see if we are down to much to mitigate losses
@@ -63,7 +60,6 @@ class Bot:
             # print(data)
             # print(ticker)
             data_tickers.append(data)
-
 
         return data_tickers, ticker_scope
 
@@ -137,8 +133,7 @@ class Bot:
                 api.submit_order(symbol=ticker, qty=1, side='sell')
             except:
                 print('order {} na'.format(ticker))
-
-
+            
 
 if __name__ == '__main__':
     b = Bot()
@@ -169,7 +164,3 @@ if __name__ == '__main__':
 
             b.check_stop_loss()
             time.sleep(3600)
-    
-    
-    
-    
