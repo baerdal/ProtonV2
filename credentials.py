@@ -1,0 +1,2 @@
+PAPER_API_KEY = ''
+SECRET_KEY = ''
